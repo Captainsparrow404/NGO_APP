@@ -1,0 +1,50 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block extrastyle %}
+<style>
+    /* Arabic font support */
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
+
+    /* Bidirectional text support */
+    .bilingual-field {
+        font-family: 'Cairo', sans-serif, system-ui;
+    }
+
+    /* RTL support for Arabic content */
+    [dir="rtl"] {
+        font-family: 'Cairo', sans-serif, system-ui;
+    }
+
+    /* Custom styles for Arabic text */
+    .arabic-text {
+        font-family: 'Cairo', sans-serif, system-ui;
+        font-size: 16px;
+        line-height: 1.5;
+    }
+
+    /* Admin form improvements */
+    .form-row {
+        display: flex;
+        flex-wrap: wrap;
+        margin-right: -15px;
+        margin-left: -15px;
+    }
+
+    /* CKEditor improvements */
+    .django-ckeditor-widget {
+        width: 100% !important;
+    }
+
+    /* Status field styling */
+    .field-status select {
+        font-family: 'Cairo', sans-serif, system-ui;
+    }
+
+    /* Image preview improvements */
+    .field-image_preview img {
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,553 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block extrastyle %}
+  {{ block.super }}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <style>
+    /* Main container */
+    .module {
+      padding: 0;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin: 20px;
+    }
+
+    /* Header section */
+    .module-header {
+      background: #417690;
+      color: white;
+      padding: 20px;
+      border-radius: 8px 8px 0 0;
+      margin-bottom: 0;
+    }
+
+    .module-header h2 {
+      margin: 0;
+      font-size: 1.5em;
+      font-weight: bold;
+    }
+
+    /* Info bar */
+    .info-bar {
+      background: #f8f9fa;
+      color: #495057;
+      padding: 15px 20px;
+      margin: 0;
+      border-bottom: 1px solid #dee2e6;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .info-bar-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 500;
+    }
+
+    .info-bar-item i {
+      color: #417690;
+    }
+
+    /* Action bar */
+    .action-bar {
+      padding: 20px;
+      background: white;
+      border-bottom: 1px solid #dee2e6;
+    }
+
+    .addlink {
+      background: #28a745;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 4px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: bold;
+      transition: background-color 0.2s ease;
+    }
+
+    .addlink:hover {
+      background: #218838;
+      color: white;
+    }
+
+    /* Table container */
+    .table-responsive {
+      padding: 20px;
+      overflow-x: auto;
+    }
+
+    /* Enhanced table styling */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0;
+      background: white;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .data-table thead th {
+      background: #417690;
+      color: white;
+      padding: 15px 12px;
+      text-align: left;
+      font-weight: bold;
+      border-bottom: 2px solid #2c5aa0;
+      white-space: nowrap;
+      font-size: 0.9em;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .data-table tbody tr {
+      border-bottom: 1px solid #dee2e6;
+      transition: background-color 0.2s ease;
+    }
+
+    .data-table tbody tr:hover {
+      background-color: #f8f9fa;
+    }
+
+    .data-table tbody tr:nth-child(even) {
+      background-color: #fafafa;
+    }
+
+    .data-table tbody tr:nth-child(even):hover {
+      background-color: #f0f0f0;
+    }
+
+    .data-table tbody td {
+      padding: 15px 12px;
+      vertical-align: middle;
+      border-right: 1px solid #eee;
+    }
+
+    .data-table tbody td:last-child {
+      border-right: none;
+    }
+
+    /* Column-specific styling */
+    .data-table th:nth-child(1), /* ID */
+    .data-table td:nth-child(1) {
+      width: 80px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .data-table th:nth-child(2), /* Name */
+    .data-table td:nth-child(2) {
+      width: 200px;
+      max-width: 200px;
+      font-weight: 600;
+    }
+
+    .data-table th:nth-child(3), /* Image */
+    .data-table td:nth-child(3) {
+      width: 100px;
+      text-align: center;
+    }
+
+    .data-table th:nth-child(4), /* Description */
+    .data-table td:nth-child(4) {
+      width: 300px;
+      max-width: 300px;
+      word-wrap: break-word;
+      line-height: 1.4;
+    }
+
+    .data-table th:nth-child(5), /* Modified Date */
+    .data-table td:nth-child(5) {
+      width: 150px;
+      white-space: nowrap;
+      font-family: monospace;
+    }
+
+    .data-table th:nth-child(6), /* Status */
+    .data-table td:nth-child(6) {
+      width: 120px;
+      text-align: center;
+    }
+
+    .data-table th:nth-child(7), /* Actions */
+    .data-table td:nth-child(7) {
+      width: 180px;
+      text-align: center;
+    }
+
+    /* Image styling */
+    .preview-image {
+      width: 60px;
+      height: 60px;
+      border-radius: 6px;
+      object-fit: cover;
+      border: 2px solid #dee2e6;
+      transition: transform 0.2s ease;
+    }
+
+    .preview-image:hover {
+      transform: scale(1.1);
+      border-color: #417690;
+    }
+
+    .no-image {
+      color: #6c757d;
+      font-style: italic;
+      font-size: 0.9em;
+      background: #f8f9fa;
+      padding: 20px 10px;
+      border-radius: 4px;
+      border: 1px dashed #dee2e6;
+    }
+
+    /* Status badge styling */
+    .status-badge {
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.85em;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: inline-block;
+    }
+
+    .status-active {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .status-inactive {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    /* Action buttons */
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .button {
+      padding: 8px 12px;
+      border-radius: 4px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.85em;
+      font-weight: bold;
+      transition: all 0.2s ease;
+      border: none;
+      cursor: pointer;
+    }
+
+    .edit-button {
+      background: #007bff;
+      color: white;
+    }
+
+    .edit-button:hover {
+      background: #0056b3;
+      color: white;
+      transform: translateY(-1px);
+    }
+
+    .delete-button {
+      background: #dc3545;
+      color: white;
+    }
+
+    .delete-button:hover {
+      background: #c82333;
+      color: white;
+      transform: translateY(-1px);
+    }
+
+    .view-button {
+      background: #28a745;
+      color: white;
+    }
+
+    .view-button:hover {
+      background: #218838;
+      color: white;
+      transform: translateY(-1px);
+    }
+
+    /* No data styling */
+    .no-data {
+      text-align: center;
+      color: #6c757d;
+      font-style: italic;
+      padding: 60px 20px;
+      background: #f8f9fa;
+      border-radius: 4px;
+    }
+
+    .no-data i {
+      font-size: 3em;
+      margin-bottom: 15px;
+      display: block;
+      color: #dee2e6;
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+<div class="module">
+    <!-- Header -->
+    <div class="module-header">
+        <h2><i class="fas fa-folder-open"></i> Cases Management</h2>
+    </div>
+
+    <!-- Info Bar -->
+    <div class="info-bar">
+        <div class="info-bar-item">
+            <i class="fas fa-user"></i>
+            <span>User: {{ request.user.username }}</span>
+        </div>
+        <div class="info-bar-item">
+            <i class="fas fa-clock"></i>
+            <span id="current-datetime">Loading...</span>
+        </div>
+    </div>
+
+    <!-- Action Button -->
+    <div class="action-bar">
+        <a href="{% url 'admin:cases_case_add' %}" class="addlink">
+            <i class="fas fa-plus"></i> ADD CASE
+        </a>
+    </div>
+
+    <!-- Cases Table -->
+    <div class="table-responsive">
+        <table id="cases-table" class="data-table">
+            <thead>
+                <tr>
+                    <th><i class="fas fa-hashtag"></i> ID</th>
+                    <th><i class="fas fa-tag"></i> Name</th>
+                    <th><i class="fas fa-image"></i> Image</th>
+                    <th><i class="fas fa-align-left"></i> Description</th>
+                    <th><i class="fas fa-calendar-alt"></i> Modified Date</th>
+                    <th><i class="fas fa-toggle-on"></i> Status</th>
+                    <th><i class="fas fa-cogs"></i> Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for case in object_list %}
+                <tr data-case-id="{{ case.case_id }}">
+                    <td>{{ case.case_id }}</td>
+                    <td>
+                        <strong>{{ case.case_name }}</strong>
+                    </td>
+                    <td>
+                        {% if case.featured_image %}
+                        <img src="{{ case.featured_image.url }}"
+                             alt="{{ case.case_name }}"
+                             class="preview-image"
+                             title="Click to view full image">
+                        {% else %}
+                        <div class="no-image">
+                            <i class="fas fa-image"></i><br>
+                            No Image
+                        </div>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="description-text" title="{{ case.description }}">
+                            {{ case.description|truncatechars:100 }}
+                        </div>
+                    </td>
+                    <td>
+                        <span class="date-display">
+                            {{ case.modified_date|date:"Y-m-d " }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="status-badge status-{{ case.status|lower }}">
+                            {{ case.get_status_display }}
+                        </span>
+                    </td>
+                    <td class="action-buttons">
+                        <a href="{% url 'admin:cases_case_change' case.pk %}"
+                           class="button view-button" title="View Details">
+                            <i class="fas fa-eye"></i> View
+                        </a>
+                        <a href="{% url 'admin:cases_case_change' case.pk %}"
+                           class="button edit-button" title="Edit Case">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                        <a href="{% url 'admin:cases_case_delete' case.pk %}"
+                           class="button delete-button"
+                           title="Delete Case"
+                           onclick="return confirm('Are you sure you want to delete this case?')">
+                            <i class="fas fa-trash"></i> Delete
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="no-data">
+                        <i class="fas fa-inbox"></i>
+                        <h3>No cases available</h3>
+                        <p>Start by adding your first case using the "ADD CASE" button above.</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Table Footer with Statistics -->
+    {% if object_list %}
+    <div class="table-footer">
+        <div class="table-stats">
+            <span class="stats-item">
+                <i class="fas fa-list"></i>
+                Total Cases: <strong>{{ object_list|length }}</strong>
+            </span>
+            <span class="stats-item">
+                <i class="fas fa-check-circle"></i>
+                Active: <strong>{{ object_list|length }}</strong>
+            </span>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extrajs %}
+  {{ block.super }}
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Update date-time display
+        function updateDateTime() {
+            const now = new Date();
+            const options = {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+            };
+            const formatted = now.toLocaleString('en-CA', options).replace(',', '');
+            document.getElementById('current-datetime').textContent = formatted;
+        }
+
+        updateDateTime();
+        setInterval(updateDateTime, 1000);
+
+        // Add click handlers for images
+        document.querySelectorAll('.preview-image').forEach(img => {
+            img.addEventListener('click', function() {
+                // Create modal to show full image
+                const modal = document.createElement('div');
+                modal.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0,0,0,0.8);
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    z-index: 1000;
+                    cursor: pointer;
+                `;
+
+                const fullImg = document.createElement('img');
+                fullImg.src = this.src;
+                fullImg.style.cssText = `
+                    max-width: 90%;
+                    max-height: 90%;
+                    border-radius: 8px;
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+                `;
+
+                modal.appendChild(fullImg);
+                document.body.appendChild(modal);
+
+                modal.addEventListener('click', function() {
+                    document.body.removeChild(modal);
+                });
+            });
+        });
+
+        // Add row click handler for better UX
+        document.querySelectorAll('.data-table tbody tr').forEach(row => {
+            if (!row.querySelector('.no-data')) {
+                row.addEventListener('click', function(e) {
+                    // Don't trigger if clicking on action buttons
+                    if (!e.target.closest('.action-buttons')) {
+                        const editButton = this.querySelector('.edit-button');
+                        if (editButton) {
+                            window.location.href = editButton.href;
+                        }
+                    }
+                });
+            }
+        });
+
+        // Add loading state for action buttons
+        document.querySelectorAll('.button').forEach(button => {
+            button.addEventListener('click', function(e) {
+                if (!this.classList.contains('delete-button')) {
+                    const originalText = this.innerHTML;
+                    this.innerHTML = '<div class="loading"></div> Loading...';
+                    this.style.pointerEvents = 'none';
+
+                    setTimeout(() => {
+                        this.innerHTML = originalText;
+                        this.style.pointerEvents = 'auto';
+                    }, 3000);
+                }
+            });
+        });
+
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl/Cmd + N for new case
+            if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+                e.preventDefault();
+                const addButton = document.querySelector('.addlink');
+                if (addButton) {
+                    window.location.href = addButton.href;
+                }
+            }
+        });
+
+        // Add tooltips for truncated descriptions
+        document.querySelectorAll('.description-text').forEach(desc => {
+            if (desc.textContent.length >= 97) {
+                desc.style.cursor = 'help';
+                desc.addEventListener('mouseenter', function() {
+                    this.style.backgroundColor = '#f8f9fa';
+                });
+                desc.addEventListener('mouseleave', function() {
+                    this.style.backgroundColor = 'transparent';
+                });
+            }
+        });
+    });
+
+    // Add confirmation with details for delete
+    function confirmDelete(caseName) {
+        return confirm(`Are you sure you want to delete the case "${caseName}"?\n\nThis action cannot be undone and will permanently remove all case data.`);
+    }
+  </script>
+{% endblock %}

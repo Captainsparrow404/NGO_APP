@@ -1,0 +1,456 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static admin_list %}
+
+{% block extrastyle %}
+  {{ block.super }}
+  <link rel="stylesheet" type="text/css" href="{% static "admin/css/changelists.css" %}">
+  <style>
+    /* Container styles */
+    #content-main {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 20px;
+    }
+
+    /* Horizontal Filter Styles */
+    .horizontal-filters {
+      background: #f8f9fa;
+      padding: 15px 20px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .filter-row {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      width: 100%;
+    }
+
+    .filter-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .filter-label {
+      font-weight: bold;
+      min-width: 80px;
+      white-space: nowrap;
+    }
+
+    select.filter-select {
+      padding: 6px 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      width: 100%;
+      max-width: 200px;
+    }
+
+    .search-input {
+      padding: 6px 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      width: 100%;
+      max-width: 250px;
+    }
+
+    .filter-buttons {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+
+    .filter-button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      white-space: nowrap;
+    }
+
+    .apply-filter {
+      background-color: #447e9b;
+      color: white;
+    }
+
+    .clear-filter {
+      background-color: #6c757d;
+      color: white;
+    }
+
+    .filter-button:hover {
+      opacity: 0.9;
+    }
+
+    /* Hide default filter and search */
+    #changelist-filter {
+      display: none !important;
+    }
+
+    #changelist-search {
+      display: none !important;
+    }
+
+    /* Table styles */
+    #changelist {
+      width: 100%;
+    }
+
+    .results {
+      width: 100%;
+    }
+
+    #result_list {
+      width: 100%;
+    }
+
+    .change-list .filtered .results {
+      width: 100% !important;
+      margin-right: 0 !important;
+    }
+
+    /* Icon styles */
+    .fas {
+      margin-right: 5px;
+    }
+
+    /* Enhanced Table styles */
+    #changelist {
+      width: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    .results {
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      overflow-x: auto;
+    }
+
+    #result_list {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0;
+      background: white;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    /* Table header styling */
+    #result_list thead th {
+      background: #417690;
+      color: white;
+      padding: 12px 8px;
+      text-align: left;
+      font-weight: bold;
+      border-bottom: 2px solid #2c5aa0;
+      white-space: nowrap;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    #result_list thead th a {
+      color: white;
+      text-decoration: none;
+    }
+
+    #result_list thead th a:hover {
+      color: #f0f0f0;
+    }
+
+    /* Table body styling */
+    #result_list tbody tr {
+      border-bottom: 1px solid #dee2e6;
+      transition: background-color 0.2s ease;
+    }
+
+    #result_list tbody tr:hover {
+      background-color: #f8f9fa;
+    }
+
+    #result_list tbody tr:nth-child(even) {
+      background-color: #fafafa;
+    }
+
+    #result_list tbody tr:nth-child(even):hover {
+      background-color: #f0f0f0;
+    }
+
+    #result_list tbody td {
+      padding: 12px 8px;
+      vertical-align: middle;
+      border-right: 1px solid #eee;
+    }
+
+    #result_list tbody td:last-child {
+      border-right: none;
+    }
+
+    /* Column width adjustments */
+    #result_list th:nth-child(1),
+    #result_list td:nth-child(1) {
+      width: 60px;
+      text-align: center;
+    }
+
+    #result_list th:nth-child(2),
+    #result_list td:nth-child(2) {
+      width: 200px;
+      max-width: 200px;
+    }
+
+    #result_list th:nth-child(3),
+    #result_list td:nth-child(3) {
+      width: 80px;
+      text-align: center;
+    }
+
+    #result_list th:nth-child(4),
+    #result_list td:nth-child(4) {
+      width: 300px;
+      max-width: 300px;
+      word-wrap: break-word;
+    }
+
+    #result_list th:nth-child(5),
+    #result_list td:nth-child(5) {
+      width: 150px;
+      white-space: nowrap;
+    }
+
+    #result_list th:nth-child(6),
+    #result_list td:nth-child(6) {
+      width: 100px;
+      text-align: center;
+    }
+
+    #result_list th:nth-child(7),
+    #result_list td:nth-child(7) {
+      width: 150px;
+      text-align: center;
+    }
+
+    /* Status badge styling */
+    .status-badge {
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 0.85em;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .status-active {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .status-inactive {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    /* Action buttons styling */
+    .action-buttons {
+      display: flex;
+      gap: 5px;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .action-button {
+      padding: 6px 10px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-size: 0.85em;
+      font-weight: bold;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s ease;
+    }
+
+    .edit-button {
+      background: #007bff;
+      color: white;
+    }
+
+    .edit-button:hover {
+      background: #0056b3;
+      color: white;
+    }
+
+    .delete-button {
+      background: #dc3545;
+      color: white;
+    }
+
+    .delete-button:hover {
+      background: #c82333;
+      color: white;
+    }
+
+    .view-button {
+      background: #28a745;
+      color: white;
+    }
+
+    .view-button:hover {
+      background: #218838;
+      color: white;
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+{% endblock %}
+
+{% block content %}
+  <div id="content-main">
+    {% block object-tools %}
+      <ul class="object-tools">
+        {% block object-tools-items %}
+          {% if has_add_permission %}
+            <li>
+              <a href="{% url cl.opts|admin_urlname:'add' %}" class="addlink">
+                <i class="fas fa-plus"></i>
+                {% blocktranslate with cl.opts.verbose_name as name %}Add {{ name }}{% endblocktranslate %}
+              </a>
+            </li>
+          {% endif %}
+        {% endblock %}
+      </ul>
+    {% endblock %}
+
+    <!-- Horizontal Filters -->
+    <div class="horizontal-filters">
+      <form id="changelist-filter-form" method="GET">
+        <div class="filter-row">
+          <div class="filter-item">
+            <label class="filter-label">
+              <i class="fas fa-filter"></i> Status:
+            </label>
+            <select name="status" class="filter-select">
+              <option value="">All Status</option>
+              <option value="active" {% if request.GET.status == 'active' %}selected{% endif %}>Active</option>
+              <option value="inactive" {% if request.GET.status == 'inactive' %}selected{% endif %}>Inactive</option>
+            </select>
+          </div>
+
+          <!-- Search Field -->
+          <div class="filter-item">
+            <label class="filter-label">
+              <i class="fas fa-search"></i> Search:
+            </label>
+            <input type="text" name="q" value="{{ request.GET.q }}" class="search-input" placeholder="Search by name or description">
+          </div>
+
+          <div class="filter-buttons">
+            <button type="submit" class="filter-button apply-filter">
+              <i class="fas fa-check"></i> Apply Filters
+            </button>
+            <button type="button" class="filter-button clear-filter" onclick="clearFilters()">
+              <i class="fas fa-times"></i> Clear Filters
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Results -->
+    <div id="changelist" class="module filtered">
+      {% block date_hierarchy %}{% if cl.date_hierarchy %}{% date_hierarchy cl %}{% endif %}{% endblock %}
+
+      <form id="changelist-form" method="post"{% if cl.formset and cl.formset.is_multipart %} enctype="multipart/form-data"{% endif %} novalidate>{% csrf_token %}
+        {% if cl.formset %}
+          <div>{{ cl.formset.management_form }}</div>
+        {% endif %}
+
+        {% block result_list %}
+          {% if action_form and actions_on_top and cl.show_admin_actions %}{% admin_actions %}{% endif %}
+          {% result_list cl %}
+          {% if action_form and actions_on_bottom and cl.show_admin_actions %}{% admin_actions %}{% endif %}
+        {% endblock %}
+      </form>
+    </div>
+  </div>
+{% endblock %}
+
+{% block extrajs %}
+  {{ block.super }}
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize date picker
+            flatpickr(".datepicker", {
+        dateFormat: "Y-m-d",
+        allowInput: true,
+        wrap: false,
+        defaultDate: "{{ request.GET.modified_date|default:'' }}"
+      });
+
+      // Set current date-time in a human-readable format
+      const currentDate = new Date();
+      const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+      console.log('Current UTC Time:', formattedDate);
+
+      // Add loading state for table
+      const table = document.getElementById('result_list');
+      if (table && table.rows.length <= 1) {
+        const tbody = table.querySelector('tbody');
+        if (tbody && tbody.children.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="100%" class="no-data"><i class="fas fa-inbox"></i> No projects found</td></tr>';
+        }
+      }
+
+      // Enhance action buttons with icons
+      document.querySelectorAll('.action-button').forEach(button => {
+        if (button.textContent.includes('Edit') && !button.querySelector('.fas')) {
+          button.innerHTML = '<i class="fas fa-edit"></i> ' + button.textContent;
+        } else if (button.textContent.includes('Delete') && !button.querySelector('.fas')) {
+          button.innerHTML = '<i class="fas fa-trash"></i> ' + button.textContent;
+        } else if (button.textContent.includes('View') && !button.querySelector('.fas')) {
+          button.innerHTML = '<i class="fas fa-eye"></i> ' + button.textContent;
+        }
+      });
+    });
+
+    // Clear filters function
+    function clearFilters() {
+      const form = document.getElementById('changelist-filter-form');
+      form.querySelector('select[name="status"]').value = '';
+      form.querySelector('input[name="modified_date"]').value = '';
+
+      // Clear URL parameters
+      const url = new URL(window.location);
+      url.searchParams.delete('status');
+      url.searchParams.delete('modified_date');
+      window.location.href = url.toString();
+    }
+
+    // Add confirmation for delete actions
+    document.addEventListener('click', function(e) {
+      if (e.target.closest('.delete-button')) {
+        if (!confirm('Are you sure you want to delete this project? This action cannot be undone.')) {
+          e.preventDefault();
+        }
+      }
+    });
+  </script>
+{% endblock %}
+
