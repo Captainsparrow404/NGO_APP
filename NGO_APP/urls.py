@@ -11,7 +11,7 @@ schema_view = get_schema_view(
     openapi.Info(
         title="NGO APP API",
         default_version='v1',
-        description="API documentation for NGO APP",
+        description="API documentation for NGO APP. To authorize, use Token authentication with format: 'Token <your-token>'",
         terms_of_service="https://www.google.com/policies/terms/",
         contact=openapi.Contact(email="contact@ngoapp.local"),
         license=openapi.License(name="BSD License"),

@@ -5,7 +5,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'your-secret-key-here'
+SECRET_KEY = 'mjasnjnehewhc:Dewccmcwcw"?{))*^%$#jndjwdnjwdjendj'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -150,9 +150,14 @@ SWAGGER_SETTINGS = {
         'Bearer': {
             'type': 'apiKey',
             'name': 'Authorization',
-            'in': 'header'
+            'in': 'header',
+            'description': 'Type "Token" followed by a space and your token'
         }
     },
+    'DEFAULT_AUTO_SCHEMA_CLASS': 'drf_yasg.inspectors.SwaggerAutoSchema',
+    'SECURITY_REQUIREMENTS': [
+        {'Bearer': []}
+    ],
     'APIS_SORTER': 'alpha',
     'JSON_EDITOR': True,
     'OPERATIONS_SORTER': 'alpha',

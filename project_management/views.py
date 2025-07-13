@@ -3,6 +3,15 @@ from rest_framework.permissions import IsAuthenticated
 from .models import ProjectManagement
 from .serializers import ProjectManagementSerializer
 from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+
+token_param = openapi.Parameter(
+    'Authorization',
+    openapi.IN_HEADER,
+    description='Token authentication. Example: "Token your-token-here"',
+    type=openapi.TYPE_STRING,
+    required=True
+)
 
 class ProjectManagementViewSet(viewsets.ModelViewSet):
     queryset = ProjectManagement.objects.all()
@@ -11,6 +20,7 @@ class ProjectManagementViewSet(viewsets.ModelViewSet):
 
     @swagger_auto_schema(
         operation_description="List all projects",
+        manual_parameters=[token_param],
         responses={200: ProjectManagementSerializer(many=True)}
     )
     def list(self, request, *args, **kwargs):
@@ -18,6 +28,7 @@ class ProjectManagementViewSet(viewsets.ModelViewSet):
 
     @swagger_auto_schema(
         operation_description="Create a new project",
+        manual_parameters=[token_param],
         request_body=ProjectManagementSerializer,
         responses={201: ProjectManagementSerializer()}
     )
