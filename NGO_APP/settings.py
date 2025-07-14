@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     'ckeditor_uploader',
     'project_management',
     'cases',
+    'order_management',
 
 ]
 
