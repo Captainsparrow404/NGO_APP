@@ -24,6 +24,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/projects/', include('project_management.urls')),
     path('api/cases/', include('cases.urls')),
+    path('api/orders/', include('order_management.urls')),
     path('ckeditor/upload/', include('ckeditor_uploader.urls')),
 
     # API Documentation
