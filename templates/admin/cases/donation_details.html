@@ -1,0 +1,143 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+    .donation-details-container {
+        max-width: 800px;
+        margin: 40px auto;
+        background: #fff;
+        padding: 32px 32px 24px 32px;
+        border-radius: 10px;
+        box-shadow: 0 4px 24px rgba(66, 133, 244, 0.12);
+        font-family: 'Segoe UI', 'Cairo', Arial, sans-serif;
+    }
+    .donation-details-container h2 {
+        font-size: 2rem;
+        margin-bottom: 28px;
+        color: #25467a;
+        text-align: center;
+        letter-spacing: 1px;
+    }
+    .donation-details-filter-form {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 28px;
+        justify-content: flex-end;
+    }
+    .donation-details-filter-form label {
+        font-size: 1rem;
+        color: #25467a;
+    }
+    .donation-details-filter-form input[type="number"] {
+        border: 1px solid #d0d5dd;
+        padding: 6px 14px;
+        border-radius: 5px;
+        width: 120px;
+        font-size: 1rem;
+        color: #25467a;
+        background: #f8fafc;
+    }
+    .donation-details-filter-form input[type="submit"] {
+        background: #2f80ed;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        padding: 7px 18px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: background 0.18s;
+        box-shadow: 0 1px 2px rgba(47,128,237,0.08);
+    }
+    .donation-details-filter-form input[type="submit"]:hover {
+        background: #215ab6;
+    }
+    .donation-details-table-wrapper {
+        overflow-x: auto;
+    }
+    .donation-details-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #f8fafc;
+        border-radius: 8px;
+        overflow: hidden;
+        margin-bottom: 15px;
+    }
+    .donation-details-table th, .donation-details-table td {
+        padding: 14px 16px;
+        text-align: left;
+        border-bottom: 1px solid #e0e7ef;
+    }
+    .donation-details-table th {
+        background: #2f80ed;
+        color: #fff;
+        font-size: 1.08rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+    .donation-details-table tr:last-child td {
+        border-bottom: none;
+    }
+    .donation-details-table tr:nth-child(even) td {
+        background: #f0f4fa;
+    }
+    .empty-row {
+        text-align: center;
+        padding: 32px 0;
+        color: #bdbdbd;
+        font-size: 1.1rem;
+    }
+    .back-link {
+        display: inline-block;
+        margin-bottom: 18px;
+        color: #2f80ed;
+        font-weight: 500;
+        text-decoration: none;
+        transition: color 0.15s;
+    }
+    .back-link:hover {
+        color: #25467a;
+        text-decoration: underline;
+    }
+</style>
+<div class="donation-details-container">
+    <a href="{{ request.META.HTTP_REFERER|default:'/admin/cases/case/' }}" class="back-link">&larr; Back to Cases</a>
+    <h2>Donation Details for {{ case.case_name }}</h2>
+    <form method="get" class="donation-details-filter-form">
+        <label for="amount">Filter by Amount:</label>
+        <input type="number" name="amount" id="amount" step="0.01" value="{{ request.GET.amount }}">
+        <input type="submit" value="Filter">
+    </form>
+    <div class="donation-details-table-wrapper">
+        <table class="donation-details-table">
+            <thead>
+                <tr>
+                    <th>Donor Name</th>
+                    <th>Amount</th>
+                    <th>Phone Number</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if donations %}
+                    {% for donation in donations %}
+                    <tr>
+                        <td>{{ donation.sender_name }}</td>
+                        <td>{{ donation.donation_amount }}</td>
+                        <td>{{ donation.phone_number }}</td>
+                        <td>{{ donation.created_date|date:"Y-m-d H:i" }}</td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="4" class="empty-row">No donations found for this case.</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

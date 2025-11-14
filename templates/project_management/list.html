@@ -1,0 +1,718 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block extrastyle %}
+  {{ block.super }}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <style>
+    /* Main container */
+    .module {
+      padding: 0;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin: 20px;
+    }
+
+    /* Header section */
+    .module-header {
+      background: #417690;
+      color: white;
+      padding: 20px;
+      border-radius: 8px 8px 0 0;
+      margin-bottom: 0;
+    }
+
+    .module-header h2 {
+      margin: 0;
+      font-size: 1.5em;
+      font-weight: bold;
+    }
+
+    /* Info bar */
+    .info-bar {
+      background: #f8f9fa;
+      color: #495057;
+      padding: 15px 20px;
+      margin: 0;
+      border-bottom: 1px solid #dee2e6;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .info-bar-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 500;
+    }
+
+    .info-bar-item i {
+      color: #417690;
+    }
+
+    /* Action bar */
+    .action-bar {
+      padding: 20px;
+      background: white;
+      border-bottom: 1px solid #dee2e6;
+    }
+
+    .addlink {
+      background: #28a745;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 4px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: bold;
+      transition: background-color 0.2s ease;
+    }
+
+    .addlink:hover {
+      background: #218838;
+      color: white;
+    }
+
+    /* Table container */
+    .table-responsive {
+      padding: 20px;
+      overflow-x: auto;
+    }
+
+    /* Enhanced table styling */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0;
+      background: white;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .data-table thead th {
+      background: #417690;
+      color: white;
+      padding: 15px 12px;
+      text-align: left;
+      font-weight: bold;
+      border-bottom: 2px solid #2c5aa0;
+      white-space: nowrap;
+      font-size: 0.9em;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .data-table tbody tr {
+      border-bottom: 1px solid #dee2e6;
+      transition: background-color 0.2s ease;
+    }
+
+    .data-table tbody tr:hover {
+      background-color: #f8f9fa;
+    }
+
+    .data-table tbody tr:nth-child(even) {
+      background-color: #fafafa;
+    }
+
+    .data-table tbody tr:nth-child(even):hover {
+      background-color: #f0f0f0;
+    }
+
+    .data-table tbody td {
+      padding: 15px 12px;
+      vertical-align: middle;
+      border-right: 1px solid #eee;
+    }
+
+    .data-table tbody td:last-child {
+      border-right: none;
+    }
+
+    /* Column-specific styling */
+    .data-table th:nth-child(1), /* ID */
+    .data-table td:nth-child(1) {
+      width: 80px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .data-table th:nth-child(2), /* Name */
+    .data-table td:nth-child(2) {
+      width: 200px;
+      max-width: 200px;
+      font-weight: 600;
+    }
+
+    .data-table th:nth-child(3), /* Image */
+    .data-table td:nth-child(3) {
+      width: 100px;
+      text-align: center;
+    }
+
+    .data-table th:nth-child(4), /* Description */
+    .data-table td:nth-child(4) {
+      width: 300px;
+      max-width: 300px;
+      word-wrap: break-word;
+      line-height: 1.4;
+    }
+
+    .data-table th:nth-child(5), /* Modified Date */
+    .data-table td:nth-child(5) {
+      width: 150px;
+      white-space: nowrap;
+      font-family: monospace;
+    }
+
+    .data-table th:nth-child(6), /* Status */
+    .data-table td:nth-child(6) {
+      width: 120px;
+      text-align: center;
+    }
+
+    .data-table th:nth-child(7), /* Actions */
+    .data-table td:nth-child(7) {
+      width: 180px;
+      text-align: center;
+    }
+
+    /* Image styling */
+    .preview-image {
+      width: 60px;
+      height: 60px;
+      border-radius: 6px;
+      object-fit: cover;
+      border: 2px solid #dee2e6;
+      transition: transform 0.2s ease;
+    }
+
+    .preview-image:hover {
+      transform: scale(1.1);
+      border-color: #417690;
+    }
+
+    .no-image {
+      color: #6c757d;
+      font-style: italic;
+      font-size: 0.9em;
+      background: #f8f9fa;
+      padding: 20px 10px;
+      border-radius: 4px;
+      border: 1px dashed #dee2e6;
+    }
+
+    /* Status badge styling */
+    .status-badge {
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.85em;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: inline-block;
+    }
+
+    .status-active {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .status-inactive {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .status-pending {
+      background-color: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffeaa7;
+    }
+
+    .status-completed {
+      background-color: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+
+    /* Action buttons */
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .button {
+      padding: 8px 12px;
+      border-radius: 4px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.85em;
+      font-weight: bold;
+      transition: all 0.2s ease;
+      border: none;
+      cursor: pointer;
+    }
+
+    .edit-button {
+      background: #007bff;
+      color: white;
+    }
+
+    .edit-button:hover {
+      background: #0056b3;
+      color: white;
+      transform: translateY(-1px);
+    }
+
+    .delete-button {
+      background: #dc3545;
+      color: white;
+    }
+
+    .delete-button:hover {
+      background: #c82333;
+      color: white;
+      transform: translateY(-1px);
+    }
+
+    .view-button {
+      background: #28a745;
+      color: white;
+    }
+
+    .view-button:hover {
+      background: #218838;
+      color: white;
+      transform: translateY(-1px);
+    }
+
+    /* No data styling */
+    .no-data {
+      text-align: center;
+      color: #6c757d;
+      font-style: italic;
+      padding: 60px 20px;
+      background: #f8f9fa;
+      border-radius: 4px;
+    }
+
+    .no-data i {
+      font-size: 3em;
+      margin-bottom: 15px;
+      display: block;
+      color: #dee2e6;
+    }
+
+    /* Responsive design */
+    @media (max-width: 1200px) {
+      .data-table th:nth-child(4), /* Description */
+      .data-table td:nth-child(4) {
+        width: 250px;
+        max-width: 250px;
+      }
+    }
+
+    @media (max-width: 992px) {
+      .table-responsive {
+        overflow-x: scroll;
+      }
+
+      .data-table {
+        min-width: 900px;
+      }
+
+      .action-buttons {
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .button {
+        font-size: 0.75em;
+        padding: 6px 10px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .info-bar {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+      }
+
+      .module {
+        margin: 10px;
+      }
+
+      .table-responsive {
+        padding: 10px;
+      }
+    }
+
+    /* Loading animation */
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #417690;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Hover effects for rows */
+    .data-table tbody tr {
+      cursor: pointer;
+    }
+
+    .data-table tbody tr:hover td {
+      background-color: rgba(65, 118, 144, 0.05);
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+<div class="module">
+    <!-- Header -->
+    <div class="module-header">
+        <h2><i class="fas fa-project-diagram"></i> Projects Management</h2>
+    </div>
+
+    <!-- Info Bar -->
+    <div class="info-bar">
+        <div class="info-bar-item">
+            <i class="fas fa-user"></i>
+            <span>User: {{ request.user.username }}</span>
+        </div>
+        <div class="info-bar-item">
+            <i class="fas fa-clock"></i>
+            <span id="current-datetime">Loading...</span>
+        </div>
+    </div>
+
+    <!-- Action Button -->
+    <div class="action-bar">
+        <a href="{% url 'admin:project_management_projectmanagement_add' %}" class="addlink">
+            <i class="fas fa-plus"></i> ADD PROJECT
+        </a>
+    </div>
+
+    <!-- Project Table -->
+    <div class="table-responsive">
+        <table id="project-table" class="data-table">
+            <thead>
+                <tr>
+                    <th><i class="fas fa-hashtag"></i> ID</th>
+                    <th><i class="fas fa-tag"></i> Name</th>
+                    <th><i class="fas fa-image"></i> Image</th>
+                    <th><i class="fas fa-align-left"></i> Description</th>
+                    <th><i class="fas fa-calendar-alt"></i> Modified Date</th>
+                    <th><i class="fas fa-toggle-on"></i> Status</th>
+                    <th><i class="fas fa-cogs"></i> Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for project in object_list %}
+                                <tr data-project-id="{{ project.project_id }}">
+                    <td>{{ project.project_id }}</td>
+                    <td>
+                        <strong>{{ project.project_name }}</strong>
+                    </td>
+                    <td>
+                        {% if project.featured_image %}
+                        <img src="{{ project.featured_image.url }}"
+                             alt="{{ project.project_name }}"
+                             class="preview-image"
+                             title="Click to view full image">
+                        {% else %}
+                        <div class="no-image">
+                            <i class="fas fa-image"></i><br>
+                            No Image
+                        </div>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="description-text" title="{{ project.description }}">
+                            {{ project.description|truncatechars:100 }}
+                        </div>
+                    </td>
+                    <td>
+                        <span class="date-display">
+                            {{ project.modified_date|date:"Y-m-d H:i" }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="status-badge status-{{ project.status|lower }}">
+                            {{ project.get_status_display }}
+                        </span>
+                    </td>
+                    <td class="action-buttons">
+                        <a href="{% url 'admin:project_management_projectmanagement_change' project.pk %}"
+                           class="button view-button" title="View Details">
+                            <i class="fas fa-eye"></i> View
+                        </a>
+                        <a href="{% url 'admin:project_management_projectmanagement_change' project.pk %}"
+                           class="button edit-button" title="Edit Project">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                        <a href="{% url 'admin:project_management_projectmanagement_delete' project.pk %}"
+                           class="button delete-button"
+                           title="Delete Project"
+                           onclick="return confirm('Are you sure you want to delete this project?')">
+                            <i class="fas fa-trash"></i> Delete
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="no-data">
+                        <i class="fas fa-inbox"></i>
+                        <h3>No projects available</h3>
+                        <p>Start by adding your first project using the "ADD PROJECT" button above.</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+
+
+    <!-- Table Footer with Statistics -->
+    {% if object_list %}
+    <div class="table-footer">
+        <div class="table-stats">
+            <span class="stats-item">
+                <i class="fas fa-list"></i>
+                Total Projects: <strong>{{ object_list|length }}</strong>
+            </span>
+            <span class="stats-item">
+                <i class="fas fa-check-circle"></i>
+                Active: <strong>{{ object_list|length }}</strong>
+            </span>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extrajs %}
+  {{ block.super }}
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Update date-time display
+        function updateDateTime() {
+            const now = new Date();
+            const options = {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+            };
+            const formatted = now.toLocaleString('en-CA', options).replace(',', '');
+            document.getElementById('current-datetime').textContent = formatted;
+        }
+
+        updateDateTime();
+        setInterval(updateDateTime, 1000);
+
+        // Add click handlers for images
+        document.querySelectorAll('.preview-image').forEach(img => {
+            img.addEventListener('click', function() {
+                // Create modal to show full image
+                const modal = document.createElement('div');
+                modal.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0,0,0,0.8);
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    z-index: 1000;
+                    cursor: pointer;
+                `;
+
+                const fullImg = document.createElement('img');
+                fullImg.src = this.src;
+                fullImg.style.cssText = `
+                    max-width: 90%;
+                    max-height: 90%;
+                    border-radius: 8px;
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+                `;
+
+                modal.appendChild(fullImg);
+                document.body.appendChild(modal);
+
+                modal.addEventListener('click', function() {
+                    document.body.removeChild(modal);
+                });
+            });
+        });
+
+        // Add row click handler for better UX
+        document.querySelectorAll('.data-table tbody tr').forEach(row => {
+            if (!row.querySelector('.no-data')) {
+                row.addEventListener('click', function(e) {
+                    // Don't trigger if clicking on action buttons
+                    if (!e.target.closest('.action-buttons')) {
+                        const editButton = this.querySelector('.edit-button');
+                        if (editButton) {
+                            window.location.href = editButton.href;
+                        }
+                    }
+                });
+            }
+        });
+
+        // Add loading state for action buttons
+        document.querySelectorAll('.button').forEach(button => {
+            button.addEventListener('click', function(e) {
+                if (!this.classList.contains('delete-button')) {
+                    const originalText = this.innerHTML;
+                    this.innerHTML = '<div class="loading"></div> Loading...';
+                    this.style.pointerEvents = 'none';
+
+                    // Restore button after 3 seconds if page doesn't navigate
+                    setTimeout(() => {
+                        this.innerHTML = originalText;
+                        this.style.pointerEvents = 'auto';
+                    }, 3000);
+                }
+            });
+        });
+
+        // Add search functionality (if needed)
+        const searchInput = document.createElement('input');
+        searchInput.type = 'text';
+        searchInput.placeholder = 'Search projects...';
+        searchInput.style.cssText = `
+            width: 300px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        `;
+
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl/Cmd + N for new project
+            if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+                e.preventDefault();
+                const addButton = document.querySelector('.addlink');
+                if (addButton) {
+                    window.location.href = addButton.href;
+                }
+            }
+        });
+
+        // Add tooltips for truncated descriptions
+        document.querySelectorAll('.description-text').forEach(desc => {
+            if (desc.textContent.length >= 97) { // 100 - 3 for "..."
+                desc.style.cursor = 'help';
+                desc.addEventListener('mouseenter', function() {
+                    this.style.backgroundColor = '#f8f9fa';
+                });
+                desc.addEventListener('mouseleave', function() {
+                    this.style.backgroundColor = 'transparent';
+                });
+            }
+        });
+    });
+
+    // Add confirmation with details for delete
+    function confirmDelete(projectName) {
+        return confirm(`Are you sure you want to delete the project "${projectName}"?\n\nThis action cannot be undone and will permanently remove all project data.`);
+    }
+  </script>
+
+  <style>
+    /* Additional styles for the footer */
+    .table-footer {
+      padding: 15px 20px;
+      background: #f8f9fa;
+      border-top: 1px solid #dee2e6;
+      border-radius: 0 0 8px 8px;
+    }
+
+    .table-stats {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.9em;
+    }
+
+    .stats-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #495057;
+    }
+
+    .stats-item i {
+      color: #417690;
+    }
+
+    .stats-item strong {
+      color: #417690;
+      font-weight: bold;
+    }
+
+    /* Enhanced description hover */
+    .description-text {
+      transition: all 0.2s ease;
+      padding: 4px;
+      border-radius: 4px;
+    }
+
+    .description-text:hover {
+      background-color: #f8f9fa !important;
+      transform: scale(1.02);
+    }
+
+    /* Date display styling */
+    .date-display {
+      font-family: 'Courier New', monospace;
+      background: #f8f9fa;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.9em;
+    }
+
+    /* Responsive adjustments for mobile */
+    @media (max-width: 768px) {
+      .table-stats {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+      }
+
+      .stats-item {
+        justify-content: center;
+      }
+    }
+  </style>
+{% endblock %}
+

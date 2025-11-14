@@ -1,0 +1,206 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+    .donation-details-container {
+        max-width: 950px;
+        margin: 40px auto;
+        background: #fff;
+        padding: 40px 40px 32px 40px;
+        border-radius: 14px;
+        box-shadow: 0 6px 32px rgba(47,128,237,0.08);
+        font-family: 'Segoe UI', 'Cairo', Arial, sans-serif;
+    }
+    .donation-details-container h2 {
+        font-size: 2.1rem;
+        margin-bottom: 30px;
+        color: #1a3664;
+        text-align: center;
+        letter-spacing: 1px;
+        font-weight: 700;
+    }
+    .donation-details-filter-form {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 32px;
+        justify-content: flex-end;
+    }
+    .donation-details-filter-form label {
+        font-size: 1rem;
+        color: #1a3664;
+        font-weight: 500;
+    }
+    .donation-details-filter-form input[type="number"] {
+        border: 1.2px solid #cdd7e1;
+        padding: 8px 14px;
+        border-radius: 6px;
+        width: 145px;
+        font-size: 1rem;
+        color: #1a3664;
+        background: #f6fafd;
+        transition: border 0.2s;
+    }
+    .donation-details-filter-form input[type="number"]:focus {
+        border: 1.6px solid #2f80ed;
+        outline: none;
+    }
+    .donation-details-filter-form input[type="submit"] {
+        background: #219653;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        padding: 8px 22px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: background 0.17s, box-shadow 0.15s;
+        box-shadow: 0 2px 6px rgba(33,150,83,0.08);
+    }
+    .donation-details-filter-form input[type="submit"]:hover {
+        background: #17633b;
+    }
+    .donation-details-table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+    }
+    .donation-details-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        background: #f9fbfc;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 1px 6px rgba(47,128,237,0.06);
+        margin-bottom: 18px;
+        table-layout: fixed;
+    }
+    .donation-details-table th, .donation-details-table td {
+        padding: 16px 14px;
+        text-align: left;
+        border-bottom: 1.5px solid #e6ecf2;
+        font-size: 1.08rem;
+        word-break: break-word;
+    }
+    .donation-details-table th {
+        background: #2f80ed;
+        color: #fff;
+        font-size: 1.12rem;
+        font-weight: 700;
+        letter-spacing: 0.7px;
+    }
+    .donation-details-table td {
+        color: #333;
+        background: #fff;
+        vertical-align: middle;
+    }
+    .donation-details-table tr:nth-child(even) td {
+        background: #f6fafd;
+    }
+    .donation-details-table tr:last-child td {
+        border-bottom: none;
+    }
+    .empty-row {
+        text-align: center;
+        padding: 38px 0;
+        color: #bdbdbd;
+        font-size: 1.08rem;
+    }
+    .back-link {
+        display: inline-block;
+        margin-bottom: 15px;
+        color: #2f80ed;
+        font-weight: 500;
+        text-decoration: none;
+        transition: color 0.15s;
+        font-size: 1rem;
+    }
+    .back-link:hover {
+        color: #17633b;
+        text-decoration: underline;
+    }
+    .admin-action-btn {
+        display: inline-block;
+        margin: 0 5px 6px 0;
+        border-radius: 6px;
+        padding: 8px 20px;
+        font-size: 1rem;
+        font-weight: 600;
+        text-decoration: none !important;
+        transition: background 0.16s, color 0.16s;
+        box-shadow: 0 1px 4px rgba(47,128,237,0.07);
+        border: none;
+        cursor: pointer;
+        outline: none;
+    }
+    .btn-edit {
+        background: #2d9cdb;
+        color: #fff;
+    }
+    .btn-edit:hover {
+        background: #217dbb;
+        color: #fff;
+    }
+    .btn-delete {
+        background: #eb5757;
+        color: #fff;
+    }
+    .btn-delete:hover {
+        background: #bb3535;
+        color: #fff;
+    }
+    .btn-details {
+        background: #219653;
+        color: #fff;
+    }
+    .btn-details:hover {
+        background: #17633b;
+        color: #fff;
+    }
+</style>
+<div class="donation-details-container">
+    <a href="{{ request.META.HTTP_REFERER|default:'/admin/project_management/projectmanagement/' }}" class="back-link">&larr; Back to Projects</a>
+    <h2>Donation Details for {{ project.project_name }}</h2>
+    <form method="get" class="donation-details-filter-form">
+        <label for="amount">Filter by Amount:</label>
+        <input type="number" name="amount" id="amount" step="0.01" value="{{ request.GET.amount }}">
+        <input type="submit" value="Filter">
+    </form>
+    <div class="donation-details-table-wrapper">
+        <table class="donation-details-table">
+            <colgroup>
+                <col style="width: 29%;">
+                <col style="width: 19%;">
+                <col style="width: 22%;">
+                <col style="width: 30%;">
+            </colgroup>
+            <thead>
+                <tr>
+                    <th>Donor Name</th>
+                    <th>Amount</th>
+                    <th>Phone Number</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if donations %}
+                    {% for donation in donations %}
+                    <tr>
+                        <td>{{ donation.sender_name }}</td>
+                        <td>{{ donation.donation_amount }}</td>
+                        <td>{{ donation.phone_number }}</td>
+                        <td>{{ donation.created_date|date:"Y-m-d H:i" }}</td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="4" class="empty-row">No donations found for this project.</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

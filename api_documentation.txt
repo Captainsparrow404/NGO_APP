@@ -1,0 +1,85 @@
+NGO APP API Documentation
+========================
+
+Base URL: https://anubhav01404.pythonanywhere.com/
+
+Authentication
+-------------
+All API endpoints require token authentication.
+Add the following header to your requests:
+Authorization: Token 3ff92d4f88379118bf9c3de49c5609000426b701
+
+Projects API (GET Endpoints)
+--------------------------
+1. List All Projects
+   Endpoint: GET /api/projects/
+   Description: Retrieves a list of all projects
+   Authentication: Required
+   Headers:
+     - Authorization: Token 3ff92d4f88379118bf9c3de49c5609000426b701
+
+   Example Response:
+   {
+       "project_id": 1,
+       "project_name": "Sample Project",
+       "featured_image": "https://anubhav01404.pythonanywhere.com/media/projects/image.png",
+       "description": "<p>Project description</p>",
+       "modified_date": "2025-07-13",
+       "status": "active"
+   }
+
+2. Get Single Project
+   Endpoint: GET /api/projects/{project_id}/
+   Description: Retrieves details of a specific project
+   Authentication: Required
+   Headers:
+     - Authorization: Token 3ff92d4f88379118bf9c3de49c5609000426b701
+
+   Example Response:
+   {
+       "project_id": 1,
+       "project_name": "Sample Project",
+       "featured_image": "https://anubhav01404.pythonanywhere.com/media/projects/image.png",
+       "description": "<p>Project description</p>",
+       "modified_date": "2025-07-13",
+       "status": "active"
+   }
+
+Cases API (GET Endpoints)
+-----------------------
+1. List All Cases
+   Endpoint: GET /api/cases/
+   Description: Retrieves a list of all cases
+   Authentication: Required
+   Headers:
+     - Authorization: Token 3ff92d4f88379118bf9c3de49c5609000426b701
+
+   Example Response:
+   {
+       "case_id": 1,
+       "case_name": "Sample Case",
+       "featured_image": "https://anubhav01404.pythonanywhere.com/media/cases/image.png",
+       "description": "<p>Case description</p>",
+       "modified_date": "2025-07-13",
+       "status": "active"
+   }
+
+2. Get Single Case
+   Endpoint: GET /api/cases/{case_id}/
+   Description: Retrieves details of a specific case
+   Authentication: Required
+   Headers:
+     - Authorization: Token 3ff92d4f88379118bf9c3de49c5609000426b701
+
+   Example Response:
+   {
+       "case_id": 1,
+       "case_name": "Sample Case",
+       "featured_image": "https://anubhav01404.pythonanywhere.com/media/cases/image.png",
+       "description": "<p>Case description</p>",
+       "modified_date": "2025-07-13",
+       "status": "active"
+   }
+
+
+
